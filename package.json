@@ -1,0 +1,11 @@
+{
+  "name": "livescript-compiler",
+  "version": "0.0.1",
+  "description": "Pluggable LiveScript compiler",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bartosz Matuszewski <bartosz.wojciech.matuszewski@gmail.com>",
+  "license": "BSD-3-Clause"
+}
