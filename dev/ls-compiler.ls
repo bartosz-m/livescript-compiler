@@ -3,7 +3,7 @@ require! {
     \chokidar
     \fs-extra : fs
     \livescript : livescript
-    \livescript/lib/lexer : livescript-lexer
+    \livescript/lib/lexer
     \livescript-transform-object-create
     \livescript-transform-esm/lib/plugin : transform-esm
     \livescript-transform-esm/lib/livescript/Compiler : Compiler
@@ -11,8 +11,7 @@ require! {
 }
 
 
-livescript.lexer = livescript-lexer
-ls-compiler = Compiler.create {livescript}
+ls-compiler = Compiler.create {livescript: livescript with {lexer}}
 transform-esm.install ls-compiler, format: \cjs
 
 absolute-path = -> path.normalize path.join __dirname, it
@@ -72,7 +71,7 @@ compile = (filepath) !->>
         fs.output-file output, js-result.code
         fs.output-file map-file, JSON.stringify js-result.map.to-JSON!
     catch
-        console.error e.message
+        console.error e.stack
     to-compile--
     set-watching watching
 
@@ -83,6 +82,7 @@ watcher = chokidar.watch "#{src-path}**/*.ls", ignored: /(^|[\/\\])\../
 .on \ready (event, filepath) ->
     console.log 'initiall scan completed'
     ready := true
+    set-watching watching
 .on \change compile
 .on \add compile
 .on \unlink (filepath) ->
