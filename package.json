@@ -4,8 +4,20 @@
   "description": "Pluggable LiveScript compiler",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/lsc test",
+    "build": "node_modules/.bin/lsc dev/build",
+    "clean": "rm -rf lib",
+    "rebuild": "npm run clean && npm run build",
+    "retest": "npm run rebuild && npm run test"
   },
   "author": "Bartosz Matuszewski <bartosz.wojciech.matuszewski@gmail.com>",
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "chokidar": "^1.7.0",
+    "fs-extra": "^4.0.2",
+    "livescript": "git+https://github.com/gkz/LiveScript.git",
+    "livescript-transform-esm": "^2.2.1",
+    "livescript-transform-object-create": "0.0.4"
+  },
+  "dependencies": {}
 }

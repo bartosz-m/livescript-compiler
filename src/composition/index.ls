@@ -1,0 +1,1 @@
+export import-properties = import \./import-properties
