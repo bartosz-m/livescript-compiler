@@ -1,11 +1,12 @@
 import
+    \../../core/symbols : { init }
     \./Node
     \./symbols : { parent, type }
 
 export default Pattern = ^^Node
 Pattern <<<
     (type): \Pattern
-    init: (@{items}) ->
+    (init): (@{items}) ->
       
     traverse-children: (visitor, cross-scope-boundary) ->
         for item,i in @items

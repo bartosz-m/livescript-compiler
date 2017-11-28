@@ -1,11 +1,12 @@
 import
+    \../../core/symbols : { init }
     \./Node
     \./symbols : { parent, type }
 
 export default Assign = ^^Node
 Assign <<<
     (type): \SmartAssign
-    init: (@{left, right}) ->
+    (init): (@{left, right}) ->
       
     traverse-children: (visitor, cross-scope-boundary) ->
         visitor @left

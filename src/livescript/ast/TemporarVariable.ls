@@ -1,4 +1,5 @@
 import
+    \../../core/symbols : { init }
     \../../composition : { import-properties }
     \../../core/components/Creatable
     \./symbols : {type}
@@ -9,7 +10,7 @@ export default TemporarVariable = ^^Node
 TemporarVariable <<<    
     (type): \TemporarVariable
     
-    init: (@{name,is-export,is-import}) !->
+    (init): (@{name,is-export,is-import}) !->
       
     traverse-children: (visitor, cross-scope-boundary) ->
     

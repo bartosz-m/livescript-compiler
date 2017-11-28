@@ -2,7 +2,7 @@ import
     \assert
     \../SourceNode
     \../../core/components : { Creatable }
-    \../../core/symbols : { create }
+    \../../core/symbols : { create, init }
     \../../composition : { import-properties }
     
     \../../nodes/ObjectNode
@@ -26,6 +26,7 @@ NodeNode.import-enumerable do
 # Node <<<
     (Symbol.has-instance): -> Object.is-prototype-of ...
     (type): \Node
+    (init): !->
     is-statement: -> false
     
     terminator: '' # required by Block

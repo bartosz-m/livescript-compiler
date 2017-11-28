@@ -1,4 +1,5 @@
 import
+    \../../core/symbols : { init }
     \./Node
     \./symbols : { type }
 
@@ -8,7 +9,7 @@ export default Identifier = ^^Node
 Identifier <<<    
     (type): \Identifier
     
-    init: (@{name}) !->
+    (init): (@{name}) !->
         unless @name?
             throw Error "Identifier doesn't have name "
       

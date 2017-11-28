@@ -1,4 +1,5 @@
 import
+    \../../core/symbols : { init }
     \./Node
     \./symbols : { parent, type }
 
@@ -6,7 +7,7 @@ import
 export default ObjectPattern = ^^Node
 ObjectPattern <<<
     (type): \ObjectPattern
-    init: (@{items}) ->
+    (init): (@{items}) ->
       
     traverse-children: (visitor, cross-scope-boundary) ->
         for item,i in @items
