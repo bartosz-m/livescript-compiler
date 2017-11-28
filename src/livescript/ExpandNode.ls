@@ -1,5 +1,5 @@
 import
-    \../nodes/symbols : {copy}
+    \../nodes/symbols : ...
 
 as-array = ->
     if Array.is-array it

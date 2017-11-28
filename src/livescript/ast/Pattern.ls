@@ -1,7 +1,7 @@
 import
-    \../../core/symbols : { init }
+    \../../core/symbols : ...
     \./Node
-    \./symbols : { parent, type }
+    \./symbols : ...
 
 export default Pattern = ^^Node
 Pattern <<<

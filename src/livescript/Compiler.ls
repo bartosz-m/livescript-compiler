@@ -8,7 +8,7 @@ import
     \../nodes/SeriesNode
     \./ExpandNode
 
-import all
+import ...
     \./ast/symbols
     \../nodes/symbols
 

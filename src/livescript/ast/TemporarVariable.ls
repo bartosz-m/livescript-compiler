@@ -2,7 +2,7 @@ import
     \../../core/symbols : { init }
     \../../composition : { import-properties }
     \../../core/components/Creatable
-    \./symbols : {type}
+    \./symbols : ...
     \./Node
   
 export default TemporarVariable = ^^Node

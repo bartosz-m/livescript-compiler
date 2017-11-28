@@ -1,5 +1,5 @@
 import
-    \../symbols : { create, init }
+    \../symbols : ...
 
 
 export default Creatable =

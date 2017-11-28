@@ -1,7 +1,7 @@
 import
-    \../../core/symbols : { init }
+    \../../core/symbols : ...
     \./Node
-    \./symbols : { type }
+    \./symbols : ...
 
 camelize = (.replace /-[a-z]/ig -> it.char-at 1 .to-upper-case!)
 

@@ -1,7 +1,7 @@
 import
-    \../../core/symbols : { init }
+    \../../core/symbols : ...
     \./Node
-    \./symbols : { type }
+    \./symbols : ...
 
 export default Literal = ^^Node
 Literal <<<

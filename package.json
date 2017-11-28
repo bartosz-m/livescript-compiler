@@ -17,7 +17,7 @@
     "chokidar": "^1.7.0",
     "fs-extra": "^4.0.2",
     "livescript": "git+https://github.com/gkz/LiveScript.git",
-    "livescript-transform-esm": "^2.4.1",
+    "livescript-transform-esm": "^2.5.0",
     "livescript-transform-object-create": "0.0.4"
   },
   "dependencies": {}

@@ -2,13 +2,13 @@ import
     \assert
     \../SourceNode
     \../../core/components : { Creatable }
-    \../../core/symbols : { create, init }
+    \../../core/symbols : ...
     \../../composition : { import-properties }
     
     \../../nodes/ObjectNode
-    \../../nodes/symbols : {copy,as-node}
+    \../../nodes/symbols : ...
     
-    \./symbols : { parent, type }
+    \./symbols : ...
 
 debug-name = ->
     if it[type]

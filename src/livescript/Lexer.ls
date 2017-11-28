@@ -2,9 +2,7 @@ import
     \assert
     \../nodes/JsNode
     \../nodes/SeriesNode
-    \../nodes/symbols
-    
-import all \../nodes/symbols
+    \../nodes/symbols : ...
 
 OriginalLex = JsNode[copy]!
     ..name = \original-lex.Lexer

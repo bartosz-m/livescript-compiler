@@ -1,6 +1,6 @@
 import
     \source-map
-    \../nodes/symbols : {as-node}
+    \../nodes/symbols : ...
 
 Super = Symbol \Super
 
