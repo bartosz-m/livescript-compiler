@@ -4,6 +4,7 @@
   "description": "Pluggable LiveScript compiler",
   "main": "lib/index.js",
   "scripts": {
+    "prepublishOnly": "npm run build && npm run test",
     "test": "node_modules/.bin/lsc test",
     "build": "node_modules/.bin/lsc dev/build",
     "clean": "rm -rf lib",
@@ -16,7 +17,7 @@
     "chokidar": "^1.7.0",
     "fs-extra": "^4.0.2",
     "livescript": "git+https://github.com/gkz/LiveScript.git",
-    "livescript-transform-esm": "^2.2.1",
+    "livescript-transform-esm": "^2.3.0",
     "livescript-transform-object-create": "0.0.4"
   },
   "dependencies": {}
