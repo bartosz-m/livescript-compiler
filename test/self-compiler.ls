@@ -7,7 +7,6 @@ require! {
     \livescript-transform-object-create
     \livescript-transform-esm/lib/plugin : transform-esm
     \../lib/livescript/Compiler : { __default__: Compiler }
-    # \../src
 }
 
 
@@ -38,7 +37,6 @@ to-compile = 0
 
 set-watching = ->
     watching := it
-    # console.log "ready[#{ready}] to-compile[#{to-compile}] watching[#{watching}]"
     if ready and to-compile == 0 and not watching
         watcher.close!
         if errors.length
@@ -50,18 +48,12 @@ set-watching = ->
 compile = (filepath) !->>
     to-compile++
     relative-path = path.relative src-path, filepath
-    # relative-js-path = relative-path.replace '.ls', '.js'
-    # output = path.join lib-path, relative-js-path
-    # relative-map-file = "#relative-js-path.map"
-    # map-file = path.join lib-path, relative-map-file
     try
         ls-code = await fs.read-file filepath, \utf8
         options =
-            # filename: path.join \../src relative-path
             filename: filepath
             relative-filename: path.join \../src relative-path
             output-filename: relative-path.replace /.ls$/ '.js'
-        # js-result = ls-ast ls-code, options <<< default-options
         js-result = ls-compiler.compile ls-code, options <<< default-options
         ext = if default-options.format == \esm and (js-result.ast.exports?length or js-result.ast.imports?length)
         then '.mjs'
