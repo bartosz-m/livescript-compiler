@@ -1,8 +1,9 @@
 import
-    \./symbols : { create, init }
+    \../symbols : { create, init }
 
 
 export default Creatable =
-    (create): (arg) ->
+    (Symbol.has-instance): -> Object.is-prototype-of ...
+    (create): ->
         ^^@
-            ..[init] arg
+            ..[init] ...&

@@ -1,1 +1,1 @@
-export import-properties = require \./import-properties
+export import-properties = import \./import-properties

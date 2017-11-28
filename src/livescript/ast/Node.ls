@@ -1,7 +1,8 @@
 import
     \assert
     \../SourceNode
-    \../../components/core : { Creatable }
+    \../../core/components : { Creatable }
+    \../../core/symbols : { create }
     \../../composition : { import-properties }
     
     \../../nodes/ObjectNode
@@ -18,10 +19,9 @@ NodeNode = ObjectNode[copy]!
 NodeNode.import-enumerable Creatable 
 
 export default Node = NodeNode.properties
-assert Node.create
-assert.equal \Function typeof! Node.create
+assert Node[create], "node.create"
+assert.equal \Function typeof! Node[create]
 assert.equal Node[as-node], NodeNode
-    # import-properties .., Creatable
 NodeNode.import-enumerable do
 # Node <<<
     (Symbol.has-instance): -> Object.is-prototype-of ...

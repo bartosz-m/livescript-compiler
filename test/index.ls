@@ -1,14 +1,15 @@
 require.extensions['.mjs'] = require.extensions['.js']
 require! {
-    assert
+    \assert
     \livescript
     \livescript/lib/lexer
+    \../lib/core/symbols : {create}
     \../lib/livescript/Compiler : {__default__: Compiler}
 }
 
 assert assert
-assert Compiler
-assert Compiler.create
+assert Compiler, 'Compiler can be loaded'
+assert Compiler.create, 'Compiler has create method'
 
 livescript.lexer = lexer
 ls-compiler = Compiler.create {livescript}

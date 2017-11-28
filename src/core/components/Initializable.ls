@@ -1,5 +1,5 @@
 import
-    \./symbols : { create, init }
+    \../symbols : { create, init }
 
-module.exports = Initializable =
-    (init): (arg) !->
+export default Initializable =
+    (init): !->
