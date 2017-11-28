@@ -1,6 +1,6 @@
 import
-    \../../components/core/Creatable
     \../../composition : { import-properties }
+    \../../core/components/Creatable
     \./symbols : {type}
     \./Node
   
