@@ -28,7 +28,7 @@ ObjectPattern <<<
     terminator: ''
     
     replace-child: (child, node) ->
-        unless idx = @items.index-of child
+        unless -1 != idx = @items.index-of child
             throw Error "Node is not a child of ObjectPattern"
         @items.splice idx,1,node
         child
