@@ -6,7 +6,7 @@ import
 
 export default ObjectPattern = ^^Node
 ObjectPattern <<<
-    (type): \ObjectPattern
+    (type): \ObjectPattern.ast.livescript
     (init): (@{items}) !->
         for item in @items
             item[parent] = @
@@ -26,3 +26,9 @@ ObjectPattern <<<
         @to-source-node parts: [ "{ ", ...items, " }"]
 
     terminator: ''
+    
+    replace-child: (child, node) ->
+        unless idx = @items.index-of child
+            throw Error "Node is not a child of ObjectPattern"
+        @items.splice idx,1,node
+        child
