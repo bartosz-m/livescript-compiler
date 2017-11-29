@@ -7,7 +7,9 @@ import
 export default ObjectPattern = ^^Node
 ObjectPattern <<<
     (type): \ObjectPattern
-    (init): (@{items}) ->
+    (init): (@{items}) !->
+        for item in @items
+            item[parent] = @
       
     traverse-children: (visitor, cross-scope-boundary) ->
         for item,i in @items
