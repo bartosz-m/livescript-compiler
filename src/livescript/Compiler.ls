@@ -39,6 +39,7 @@ wrap-node = (mapper) ->
 
 AST.Block = ObjectNode[copy]!properties
 AST.Assign = ObjectNode[copy]!properties
+AST.Call = ObjectNode[copy]!properties
 
 assert AST.Block != AST.Block[copy]!
 assert AST.Block != AST[copy]!Block
@@ -83,7 +84,23 @@ AssignReplaceChild
 
 AST.Assign
     ..replace-child = AssignReplaceChild[js]
-
+    
+AST.Call[as-node]import-enumerable do
+    replace-child: (child, ...nodes) ->
+        idx = @args.index-of child
+        unless idx > -1
+            throw Error "Trying to replace node witch is not child of current node"
+        unless nodes.length
+            throw Error "Replace called without nodes"
+        @lines.splice idx, 1, ...nodes
+        for node in nodes
+            node[parent] = @
+        child[parent] = null
+        child
+            
+          
+          
+          
 for k, NodeType of AST
     for k,v of Node{get-children, replace-with,to-source-node}
         NodeType[k] ?= JsNode.new v .[js]
@@ -152,8 +169,7 @@ Compiler <<<
         output = SourceNode.from-source-node ast-root.Compile.call ast-root, options
         output.set-file options.filename
         @postprocess-generated-code.exec output
-        if map = options.map
-            
+        if map = options.map and map != \none
             result = output.to-string-with-source-map!                
                 ..ast = ast-root
                 if map is 'embedded'
