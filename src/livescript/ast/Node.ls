@@ -44,6 +44,10 @@ NodeNode.import-enumerable do
         @[parent]remove-child @
     
     rip-name: !-> @name = it
+    
+    expand-slice: -> @
+    
+    unwrap: -> @
       
     rewrite-shorthand: (o, assign) !->
       
