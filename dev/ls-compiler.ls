@@ -57,9 +57,9 @@ compile = (filepath) !->>
         output = path.join lib-path, relative-js-path
         relative-map-file = "#relative-js-path.map"
         map-file = path.join lib-path, relative-map-file
-        js-result
-            ..source-map = ..map.to-JSON!
-            ..code += "\n//# sourceMappingURL=#{path.basename map-file}\n"
+        # js-result
+        #     ..source-map = ..map.to-JSON!
+        #     ..code += "\n//# sourceMappingURL=#{path.basename map-file}\n"
         fs.output-file output, js-result.code
         fs.output-file map-file, JSON.stringify js-result.map.to-JSON!
     catch
