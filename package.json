@@ -9,7 +9,8 @@
     "build": "node_modules/.bin/lsc dev/build",
     "clean": "rm -rf lib",
     "rebuild": "npm run clean && npm run build",
-    "retest": "npm run rebuild && npm run test"
+    "retest": "npm run rebuild && npm run test",
+    "update-dependencies": "ncu -a && npm install && git add . && git commit -m \"Updated dependencies\" && npm version patch && npm publish"
   },
   "author": "Bartosz Matuszewski <bartosz.wojciech.matuszewski@gmail.com>",
   "license": "BSD-3-Clause",
@@ -17,7 +18,7 @@
     "chokidar": "^1.7.0",
     "fs-extra": "^4.0.2",
     "livescript": "git+https://github.com/gkz/LiveScript.git",
-    "livescript-transform-esm": "^2.8.2",
+    "livescript-transform-esm": "^2.8.9",
     "livescript-transform-object-create": "0.0.4"
   },
   "dependencies": {
