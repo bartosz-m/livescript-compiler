@@ -41,6 +41,7 @@ wrap-node = (mapper) ->
 AST.Block = ObjectNode[copy]!properties
 AST.Assign = ObjectNode[copy]!properties
 AST.Call = ObjectNode[copy]!properties
+AST.Yield = ObjectNode[copy]!properties
 
 assert AST.Block != AST.Block[copy]!
 assert AST.Block != AST[copy]!Block
@@ -98,6 +99,15 @@ AST.Call[as-node]import-enumerable do
             node[parent] = @
         child[parent] = null
         child
+
+AST.Yield[as-node]import-enumerable do
+    replace-child: (child, node) ->
+        if @it == child
+            node[parent] = @
+            child[parent] = null
+            child
+        else
+            throw Error "Trying to replace node witch is not child of current node"
             
           
           
