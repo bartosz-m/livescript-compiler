@@ -20,5 +20,7 @@
     "livescript-transform-esm": "^2.8.2",
     "livescript-transform-object-create": "0.0.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "source-map": "^0.6.1"
+  }
 }
