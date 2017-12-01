@@ -1,5 +1,6 @@
 import
     \assert
+    \path
     \./SourceNode
     \./Lexer
     \./ast/Node
@@ -162,6 +163,16 @@ Compiler <<<
             .. <<< options{filename}
             @expand.exec ..
             @postprocess-ast.exec ..
+    
+    add-source-map-url: ({result, code, options}) !->
+        {filename, output-filename} = options
+        if options.map is 'embedded'
+            result.map.set-source-content filename, code
+        if options.map in <[ linked debug ]>
+            map-path = "#{path.basename output-filename}.map"
+            result.code += "\n//# sourceMappingURL=#map-path\n"
+        else
+           result.code += "\n//# sourceMappingURL=data:application/json;base64,#{ new Buffer result.map.to-string! .to-string 'base64' }\n"
 
     # livescript compatible signature
     compile: (code, options = {}) ->
@@ -172,9 +183,7 @@ Compiler <<<
         if map = options.map and map != \none
             result = output.to-string-with-source-map!                
                 ..ast = ast-root
-                if map is 'embedded'
-                    ..map.set-source-content options.filename, code
-                    ..code += "\n//# sourceMappingURL=data:application/json;base64,#{ new Buffer ..map.to-string! .to-string 'base64' }\n"
+                @add-source-map-url {result,code, options}
             result
         else
             output.to-string!
