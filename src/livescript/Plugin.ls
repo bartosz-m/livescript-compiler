@@ -16,6 +16,9 @@ Plugin <<<
     install: (@livescript, config) !->
         @livescript = @get-default-compiler! unless @livescript
         @config <<< config
-        @enable!
+        my-symbol = Symbol.for "#{@name}.plugin.livescript"
+        unless @livescipt[my-symbol]
+            @enable!
+            @livescipt[my-symbol] = true
     
     enable: !-> throw Error "Plugin must override 'enable' method"
