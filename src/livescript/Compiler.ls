@@ -93,7 +93,7 @@ AST.Call[as-node]import-enumerable do
             throw Error "Trying to replace node witch is not child of current node"
         unless nodes.length
             throw Error "Replace called without nodes"
-        @lines.splice idx, 1, ...nodes
+        @args.splice idx, 1, ...nodes
         for node in nodes
             node[parent] = @
         child[parent] = null
