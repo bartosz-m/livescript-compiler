@@ -20,6 +20,6 @@ Plugin <<<
         unless @livescript[my-symbol]
             @enable!
             @livescript[my-symbol] = true
-            @livescipt[]plugins.push @
+            @livescript[]plugins.push @
     
     enable: !-> throw Error "Plugin must override 'enable' method"
