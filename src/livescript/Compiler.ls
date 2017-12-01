@@ -180,7 +180,7 @@ Compiler <<<
         output = SourceNode.from-source-node ast-root.Compile.call ast-root, options
         output.set-file options.filename
         @postprocess-generated-code.exec output
-        if map = options.map and map != \none
+        if (map = options.map) and map != \none
             result = output.to-string-with-source-map!                
                 ..ast = ast-root
                 @add-source-map-url {result,code, options}
