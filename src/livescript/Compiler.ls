@@ -41,6 +41,7 @@ wrap-node = (mapper) ->
 AST.Block = ObjectNode[copy]!properties
 AST.Assign = ObjectNode[copy]!properties
 AST.Call = ObjectNode[copy]!properties
+AST.Chain = ObjectNode[copy]!properties
 AST.Yield = ObjectNode[copy]!properties
 
 assert AST.Block != AST.Block[copy]!
@@ -108,6 +109,24 @@ AST.Yield[as-node]import-enumerable do
             child
         else
             throw Error "Trying to replace node witch is not child of current node"
+
+AST.Chain[as-node]import-enumerable do
+    replace-child: (child-to-replace, ...nodes) ->
+        for name in @children when child = @[name]
+            if child == child-to-replace
+                child[parent] = null
+                @[name] = nodes.0
+                nodes.0[parent] = @
+                return child
+            if \Array == typeof! child
+                if -1  != idx = child.index-of child-to-replace
+                    child.splice idx, 1, ...nodes
+                    for node in nodes
+                        node[parent] = @
+                    child[parent] = null
+                    return child
+      
+        throw Error "Trying to replace node witch is not child of current node"
             
           
           

@@ -5,7 +5,7 @@ import
 
 export default Literal = ^^Node
 Literal <<<
-    (type): \Literal
+    (type): \Literal.ast.LiveScript
     
     (init): (@{value}) !->
       

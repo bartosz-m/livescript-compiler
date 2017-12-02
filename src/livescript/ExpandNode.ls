@@ -76,7 +76,7 @@ ExpandNode <<<
                 to-exec.push ast-root
             else
                 to-exec.push ...flatten execing.map ->
-                    it.get-children!
+                    it.get-children?! # livescript generates additional nodes during compilation so we cannot toutch them
     (copy): ->
         ^^@
             ..rules = @rules.map (.[copy]!)
