@@ -1,6 +1,6 @@
 {
   "name": "livescript-compiler",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Pluggable LiveScript compiler",
   "main": "lib/index.js",
   "scripts": {
