@@ -8,7 +8,7 @@ Pattern <<<
     (type): \Pattern
     (init): (@{items}) ->
       
-    traverse-children: (visitor, cross-scope-boundary) ->
+    traverse-children: (visitor, cross-scope-boundary) !->
         for item,i in @items
             visitor item, @, \items, i
         for item in @items

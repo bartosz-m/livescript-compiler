@@ -1,5 +1,6 @@
 import
     \../nodes/symbols : ...
+    \./ast/symbols : ...
 
 as-array = ->
     if Array.is-array it
@@ -16,6 +17,8 @@ flatten = (arr) ->
     result
 
 copy-source-location = (source, target) !->
+    if target.line?
+        return
     {line,column,filename} = source
     unless line?
         line = 10000000000
@@ -24,6 +27,7 @@ copy-source-location = (source, target) !->
         for child in children
             line = Math.min line, child.line if child.line
             column = Math.min column, child.column if child.column
+    
     target <<< {line,column,filename}
 
 export default ExpandNode =  ^^null
@@ -59,24 +63,23 @@ ExpandNode <<<
             for node in execing
                 for rule in @rules when mapped = rule.exec node
                     try
+                        changed = true
                         new-nodes = as-array mapped
                         unless new-nodes.0
-                            console.log rule
-                        unless new-nodes.length == 1
-                        and new-nodes.0 == node
-                            for n in new-nodes
-                                copy-source-location node, n
-                            node.replace-with ...new-nodes
-                        changed = true
+                            console.log \empty rule
+                        for n in new-nodes
+                            copy-source-location node, n
+                        node.replace-with ...new-nodes
                         break
                     catch
+                        console.log e.stack
                         e.message = "During #{rule.name} #{e.message}"
                         throw e
             if changed
                 to-exec.push ast-root
             else
                 to-exec.push ...flatten execing.map ->
-                    it.get-children?! # livescript generates additional nodes during compilation so we cannot toutch them
+                    it.get-children?! # livescript generates additional nodes during compilation and we cannot touch them
     (copy): ->
         ^^@
             ..rules = @rules.map (.[copy]!)

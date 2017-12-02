@@ -137,6 +137,18 @@ for k, NodeType of AST
     for k,v of Node{get-children, replace-with,to-source-node}
         NodeType[k] ?= JsNode.new v .[js]
 
+assertions = SeriesNode[copy]!
+    # ..append JsNode.new (node,parent-node,name) !->
+    #       unless node.line? or (node[type] == \Parens)
+    #           console.log 'missing line', "#{parent-node?[type]}.#{name}[#{node[type]}]"
+
+assert-nodes = JsNode.new !->
+    assertions.exec it, null, \root
+    walk = (node,parent-node,name,index) !~>
+        assertions ...
+    it.traverse-children walk
+      
+
 export default Compiler = ^^ObjectNode
 Compiler <<<
     lexer: ^^null
@@ -190,10 +202,30 @@ Compiler <<<
         ast-root
     
     generate-ast: (code, options) ->
+        
         @convert-ast (@livescript.ast @lexer.lex.exec code), options
             .. <<< options{filename}
             @expand.exec ..
+            assert-nodes.exec ..
             @postprocess-ast.exec ..
+            # assert-nodes.exec ..
+    
+    fix-node: (node, filename) !->
+      assert filename
+      if \String != typeof! node
+          unless node.source
+              node.source = filename
+          for child in node.children
+              @fix-source-map child, filename
+    
+    fix-source-map: (node, filename) !->
+        assert filename
+        if \Array == typeof! node
+            for n in node
+                @fix-node n, filename
+        else
+            @fix-node node, filename
+        
     
     add-source-map-url: ({result, code, options}) !->
         {filename, output-filename} = options
@@ -207,9 +239,12 @@ Compiler <<<
 
     # livescript compatible signature
     compile: (code, options = {}) ->
+        unless options.output-filename
+            options.output-filename = options.filename.replace /\.ls$/ '.js'
         ast-root = @generate-ast code, options
         output = SourceNode.from-source-node ast-root.Compile.call ast-root, options
         output.set-file options.filename
+        @fix-source-map output, options.filename
         @postprocess-generated-code.exec output
         if (map = options.map) and map != \none
             result = output.to-string-with-source-map!                
