@@ -92,6 +92,13 @@ NodeNode.import-enumerable do
         
     to-source-node: ({parts = []}) ->
         try
+            unless @line?
+                # console.log "missing line #{@[type]} at #{@[parent]?[type]} #{@[parent]?line}"
+                @{line,column} = @[parent]
+                # ,column}
+            unless @filename?
+                @{filename} = @[parent]
+                # console.log "missing filename #{@[type]} at #{@[parent]?[type]} #{@[parent]?line} #{@[parent]?filename}"
             parts = parts.map ->
                 if \String == typeof! it then "#{it}"
                 else it

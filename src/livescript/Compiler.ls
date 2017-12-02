@@ -225,6 +225,13 @@ Compiler <<<
                 @fix-node n, filename
         else
             @fix-node node, filename
+    
+    fix-ast-source-map: (ast, filename) !->
+        assert filename
+        for e in ast.exports
+            e.filename = filename
+        for e in ast.imports
+            e.filename = filename
         
     
     add-source-map-url: ({result, code, options}) !->
@@ -242,10 +249,11 @@ Compiler <<<
         unless options.output-filename
             options.output-filename = options.filename.replace /\.ls$/ '.js'
         ast-root = @generate-ast code, options
+        @fix-ast-source-map ast-root, options.filename
         output = SourceNode.from-source-node ast-root.Compile.call ast-root, options
         output.set-file options.filename
-        @fix-source-map output, options.filename
         @postprocess-generated-code.exec output
+        @fix-source-map output, options.filename
         if (map = options.map) and map != \none
             result = output.to-string-with-source-map!                
                 ..ast = ast-root

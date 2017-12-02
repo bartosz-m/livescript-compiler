@@ -27,6 +27,7 @@ copy-source-location = (source, target) !->
         for child in children
             line = Math.min line, child.line if child.line
             column = Math.min column, child.column if child.column
+            filename = filename or child.filename
     
     target <<< {line,column,filename}
 
@@ -40,7 +41,6 @@ ExpandNode <<<
         @rules.push rule
         
     remove: (rule-or-filter) ->
-        console.log @rules
         idx = if \Function == typeof! rule-or-filter
               then @rules.find-index rule-or-filter
               else @rules.index-of rule-or-filter
