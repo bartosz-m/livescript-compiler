@@ -95,7 +95,7 @@ NodeNode.import-enumerable do
             parts = parts.map ->
                 if \String == typeof! it then "#{it}"
                 else it
-            result = new SourceNode @line, @column, null, parts
+            result = new SourceNode @line, @column, @filename, parts
             result.display-name = @[type]
             result
         catch e
