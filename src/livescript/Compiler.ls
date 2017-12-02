@@ -43,6 +43,7 @@ AST.Assign = ObjectNode[copy]!properties
 AST.Call = ObjectNode[copy]!properties
 AST.Chain = ObjectNode[copy]!properties
 AST.Yield = ObjectNode[copy]!properties
+AST.Cascade = ObjectNode[copy]!properties
 
 assert AST.Block != AST.Block[copy]!
 assert AST.Block != AST[copy]!Block
@@ -127,7 +128,8 @@ AST.Chain[as-node]import-enumerable do
                     return child
       
         throw Error "Trying to replace node witch is not child of current node"
-            
+AST.Cascade[as-node]import-enumerable do
+    replace-child: AST.Chain.replace-child          
           
           
           
