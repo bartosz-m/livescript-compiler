@@ -7,6 +7,8 @@ export default Assign = ^^Node
 Assign <<<
     (type): \SmartAssign
     (init): (@{left, right}) ->
+        @left[parent] = @
+        @right[parent] = @
       
     traverse-children: (visitor, cross-scope-boundary) ->
         visitor @left
