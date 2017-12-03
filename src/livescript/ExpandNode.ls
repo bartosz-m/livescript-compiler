@@ -33,6 +33,7 @@ copy-source-location = (source, target) !->
 
 export default ExpandNode =  ^^null
 ExpandNode <<<
+    name: \Expand
     append: (rule) !->
         unless rule[copy]
             throw Error "Creating node #{rule.name ? ''} without copy method is realy bad practice"
@@ -72,8 +73,8 @@ ExpandNode <<<
                         node.replace-with ...new-nodes
                         break
                     catch
-                        console.log e.stack
-                        e.message = "During #{rule.name} #{e.message}"
+                        e.message += "\n at node #{@name} applyin #{rule.name}"
+                        console.log e
                         throw e
             if changed
                 to-exec.push ast-root

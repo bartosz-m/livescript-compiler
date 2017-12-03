@@ -10,12 +10,24 @@ import
     
     \./symbols : ...
 
+    
+``class InternalCompilerError extends Error {
+    constructor(node,message) {
+        super();
+        this.init(node,message);
+    }
+}``
+InternalCompilerError:: <<<
+    init: (node, message) ->
+        @message = "InternalCompilerError: #{message} in #{node.filename}:#{node.line}:#{node.column}"
+
 debug-name = ->
     if it[type]
     then "[#{that}]"
     else "livescript.ast.#{it@@name}"
 
 NodeNode = ObjectNode[copy]!
+    ..name = \Node.ast
 NodeNode.import-enumerable Creatable 
 
 export default Node = NodeNode.properties
@@ -38,6 +50,8 @@ NodeNode.import-enumerable do
     unparen: -> @
     
     remove: ->
+        unless @[parent]
+            throw new InternalCompilerError @, "#{@[type]} doesn't have parent"
         unless @[parent]remove-child
             Type = @[parent][type]
             throw Error "You need to implement method #{Type}::remove-child youreself"
@@ -70,9 +84,11 @@ NodeNode.import-enumerable do
     
     replace-with: (...nodes) ->
         unless @[parent]
-            throw Error "#{@[type]} doesn't have parent"
+            throw new InternalCompilerError @, "#{@[type]} doesn't have parent"
+            # throw Error "#{@[type]} doesn't have parent at #{@line}:#{@column} in #{@filename}"
         unless @[parent].replace-child
-            throw Error "#{@[parent][type]} doesn't imlement replace-child method"
+            throw new InternalCompilerError @, "#{@[parent][type]} doesn't imlement replace-child method"
+            # throw Error "#{@[parent][type]} doesn't imlement replace-child method"
         for node in nodes
             node[parent] = @[parent]
         @[parent].replace-child @, ...nodes
