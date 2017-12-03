@@ -6,7 +6,7 @@
   "scripts": {
     "prepublishOnly": "npm run build && npm run test",
     "test": "node_modules/.bin/lsc test",
-    "build": "node_modules/.bin/lsc dev/build",
+    "build": "node -r livescript-transform-esm/register/cjs ./dev/build",
     "clean": "rm -rf lib",
     "rebuild": "npm run clean && npm run build",
     "retest": "npm run rebuild && npm run test",
@@ -18,9 +18,11 @@
     "chokidar": "^1.7.0",
     "fs-extra": "^4.0.2",
     "livescript": "git+https://github.com/gkz/LiveScript.git",
+    "livescript-compiler": "0.0.24",
+    "livescript-system": "0.0.2",
     "livescript-transform-esm": "^2.8.20",
-    "livescript-transform-object-create": "1.0.2",
-    "livescript-compiler": "0.0.24"
+    "livescript-transform-implicit-async": "^0.1.7",
+    "livescript-transform-object-create": "1.0.2"
   },
   "dependencies": {
     "source-map": "^0.6.1"
