@@ -68,8 +68,8 @@ compile = (filepath) !->>
         fs.output-file output, js-result.code
         fs.output-file map-file, JSON.stringify js-result.map.to-JSON!
     catch
+        console.error e
         errors.push e
-        console.error e.message
     to-compile--
     set-watching watching
 
