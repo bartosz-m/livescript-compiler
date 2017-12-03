@@ -12,6 +12,7 @@ require! {
 
 ls-compiler = Compiler.create {livescript: livescript with {lexer}}
 transform-esm.install ls-compiler, format: \cjs
+livescript-transform-object-create.install ls-compiler
 
 absolute-path = -> path.normalize path.join __dirname, it
 
