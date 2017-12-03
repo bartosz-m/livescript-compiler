@@ -13,11 +13,31 @@ import ...
     \./ast/symbols
     \../nodes/symbols
 
+unified-replace-child = (child-to-replace, ...nodes) ->
+    for name in @children when child = @[name]
+        if child == child-to-replace
+            if nodes.length > 1
+                throw Error "Trying to insert multiple nodes at #{@[type]}.#{name} where only one is allowed"
+            child[parent] = null
+            @[name] = nodes.0
+            nodes.0[parent] = @
+            return child
+        if \Array == typeof! child
+            if -1  != idx = child.index-of child-to-replace
+                child.splice idx, 1, ...nodes
+                for node in nodes
+                    node[parent] = @
+                child[parent] = null
+                return child
+    
+    throw Error "Trying to replace node witch is not child of current node"
+
 AST = ObjectNode[copy]!properties
+    ..[as-node]name = \ast.livescript
 
 Prototype = Symbol \Prototype
 
-super-compile = JsNode.copy!
+super-compile = JsNode[copy]!
     ..name = \SuperCompile
     ..js-function = ->
         @[Prototype]compile-root ...
@@ -39,11 +59,17 @@ wrap-node = (mapper) ->
     wrapped
 
 AST.Block = ObjectNode[copy]!properties
+    ..[as-node]name = \Block.ast.livescript
 AST.Assign = ObjectNode[copy]!properties
+    ..[as-node]name = \Assign.ast.livescript
 AST.Call = ObjectNode[copy]!properties
+    ..[as-node]name = \Call.ast.livescript
 AST.Chain = ObjectNode[copy]!properties
+    ..[as-node]name = \Chain.ast.livescript
 AST.Yield = ObjectNode[copy]!properties
+    ..[as-node]name = \Yield.ast.livescript
 AST.Cascade = ObjectNode[copy]!properties
+    ..[as-node]name = \Cascade.ast.livescript
 
 assert AST.Block != AST.Block[copy]!
 assert AST.Block != AST[copy]!Block
@@ -57,6 +83,7 @@ BlockReplaceChild = JsNode.new (child, ...nodes) ->
     @lines.splice idx, 1, ...nodes
     for node in nodes
         node[parent] = @
+    # child[parent] = null
     child
 
 BlockRemoveChild = JsNode.new (child) ->
@@ -64,6 +91,7 @@ BlockRemoveChild = JsNode.new (child) ->
     unless idx > -1
         throw Error "Trying to replace node witch is not child of current node"
     @lines.splice idx, 1
+    child[parent] = null
     child
 
 
@@ -78,8 +106,14 @@ AssignReplaceChild = JsNode.new (child, ...nodes) ->
     [new-node] = nodes
     if @left == child
         @left = new-node
+            ..[parent] = @
+        child[parent] = null
+        child
     else if @right == child
         @right = new-node
+            ..[parent] = @
+        child[parent] = null
+        child
     else
       throw new Error "Node is not child of Assign"
 
@@ -90,57 +124,22 @@ AST.Assign
     ..replace-child = AssignReplaceChild[js]
     
 AST.Call[as-node]import-enumerable do
-    replace-child: (child, ...nodes) ->
-        idx = @args.index-of child
-        unless idx > -1
-            throw Error "Trying to replace node witch is not child of current node"
-        unless nodes.length
-            throw Error "Replace called without nodes"
-        @args.splice idx, 1, ...nodes
-        for node in nodes
-            node[parent] = @
-        child[parent] = null
-        child
+    replace-child: unified-replace-child
 
 AST.Yield[as-node]import-enumerable do
-    replace-child: (child, node) ->
-        if @it == child
-            node[parent] = @
-            child[parent] = null
-            child
-        else
-            throw Error "Trying to replace node witch is not child of current node"
-
+    replace-child: unified-replace-child
+  
 AST.Chain[as-node]import-enumerable do
-    replace-child: (child-to-replace, ...nodes) ->
-        for name in @children when child = @[name]
-            if child == child-to-replace
-                child[parent] = null
-                @[name] = nodes.0
-                nodes.0[parent] = @
-                return child
-            if \Array == typeof! child
-                if -1  != idx = child.index-of child-to-replace
-                    child.splice idx, 1, ...nodes
-                    for node in nodes
-                        node[parent] = @
-                    child[parent] = null
-                    return child
-      
-        throw Error "Trying to replace node witch is not child of current node"
+    replace-child: unified-replace-child
+    
 AST.Cascade[as-node]import-enumerable do
-    replace-child: AST.Chain.replace-child          
-          
-          
+    replace-child: AST.Chain.replace-child     
           
 for k, NodeType of AST
     for k,v of Node{get-children, replace-with,to-source-node}
         NodeType[k] ?= JsNode.new v .[js]
 
 assertions = SeriesNode[copy]!
-    # ..append JsNode.new (node,parent-node,name) !->
-    #       unless node.line? or (node[type] == \Parens)
-    #           console.log 'missing line', "#{parent-node?[type]}.#{name}[#{node[type]}]"
 
 assert-nodes = JsNode.new !->
     assertions.exec it, null, \root
@@ -159,10 +158,12 @@ Compiler <<<
         @ast = AST[copy]!
         assert @ast.Block != AST.Block
         @expand = ExpandNode[copy]!
-        @postprocess-ast = SeriesNode.copy!
+        @postprocess-ast = SeriesNode[copy]!
             ..name = 'postprocessAst'
-        @postprocess-generated-code = SeriesNode.copy!
+            ..this = @
+        @postprocess-generated-code = SeriesNode[copy]!
             ..name = 'postprocessGeneratedCode'
+            ..this = @
     
     nodes-names: <[
         ast lexer expand postprocessAst postprocessGeneratedCode
@@ -193,8 +194,11 @@ Compiler <<<
                 ..[parent] = parent-node
                 ..filename = options.filename
                 ..[Prototype] = Object.get-prototype-of ..
+                
                 for k,v of Node{get-children, replace-with,to-source-node}
                     ..[Prototype][k] ?= v
+                ..[Prototype]replace-child ?= unified-replace-child
+                  
             if NodeType = @ast[node@@name]
                 node <<< NodeType
             
@@ -228,9 +232,9 @@ Compiler <<<
     
     fix-ast-source-map: (ast, filename) !->
         assert filename
-        for e in ast.exports
+        for e in ast[]exports
             e.filename = filename
-        for e in ast.imports
+        for e in ast[]imports
             e.filename = filename
         
     
@@ -246,6 +250,8 @@ Compiler <<<
 
     # livescript compatible signature
     compile: (code, options = {}) ->
+        unless options.filename
+            options.filename = "tmp#{Date.now!}.ls"
         unless options.output-filename
             options.output-filename = options.filename.replace /\.ls$/ '.js'
         ast-root = @generate-ast code, options
