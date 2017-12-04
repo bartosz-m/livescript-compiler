@@ -212,6 +212,7 @@ Compiler <<<
             @expand.exec ..
             assert-nodes.exec ..
             @postprocess-ast.exec ..
+            @fix-ast-source-map .., options.filename
             # assert-nodes.exec ..
     
     fix-node: (node, filename) !->
@@ -247,6 +248,24 @@ Compiler <<<
             result.code += "\n//# sourceMappingURL=#map-path\n"
         else
            result.code += "\n//# sourceMappingURL=data:application/json;base64,#{ new Buffer result.map.to-string! .to-string 'base64' }\n"
+           
+    compile-ast: ({ast, code, options}) ->
+        unless options.filename
+            options.filename = "tmp#{Date.now!}.ls"
+        unless options.output-filename
+            options.output-filename = options.filename.replace /\.ls$/ '.js'
+        
+        output = SourceNode.from-source-node ast.Compile.call ast, options
+        output.set-file options.filename
+        @postprocess-generated-code.exec output
+        if (map = options.map) and map != \none
+            result = output.to-string-with-source-map!                
+                ..ast = ast
+                @add-source-map-url {result,code, options}
+            result
+        else
+            output.to-string!
+        
 
     # livescript compatible signature
     compile: (code, options = {}) ->
@@ -254,16 +273,5 @@ Compiler <<<
             options.filename = "tmp#{Date.now!}.ls"
         unless options.output-filename
             options.output-filename = options.filename.replace /\.ls$/ '.js'
-        ast-root = @generate-ast code, options
-        @fix-ast-source-map ast-root, options.filename
-        output = SourceNode.from-source-node ast-root.Compile.call ast-root, options
-        output.set-file options.filename
-        @postprocess-generated-code.exec output
-        @fix-source-map output, options.filename
-        if (map = options.map) and map != \none
-            result = output.to-string-with-source-map!                
-                ..ast = ast-root
-                @add-source-map-url {result,code, options}
-            result
-        else
-            output.to-string!
+        ast = @generate-ast code, options
+        @compile-ast {ast,code,options}
