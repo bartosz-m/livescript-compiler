@@ -5,8 +5,7 @@ import
     \../../core/symbols : ...
     \../../composition : { import-properties }
     
-    \js-nodes : { ObjectNode }
-    \js-nodes/symbols : { copy, as-node, js }
+    \js-nodes : { ObjectNode, symbols : { copy, as-node, js } }
     
     \./symbols : ...
 

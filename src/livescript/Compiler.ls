@@ -4,37 +4,10 @@ import
     \./SourceNode
     \./Lexer
     \./ast/Node
-    \js-nodes/ObjectNode
-    \js-nodes/JsNode
-    \js-nodes/SeriesNode
+    \./ast/symbols : ...
+    \js-nodes : {ObjectNode, JsNode, SeriesNode, symbols : { copy, as-node, js } }
     \./ExpandNode
-    \js-nodes/symbols : { copy, as-node, js }
-
-import ...
-    \./ast/symbols
-
-copy-source-location = (source, target) !->
-    if target.line?
-        return
-    {first-line,first-column,last-line,last-column,line,column,filename}  = source
-    unless line?
-        first_line = line = 10000000000
-        first_column = column = 10000000000
-        last_line = -1
-        last_column = -1
-        children = source.get-children!
-        for child in children
-            line = first_line = Math.min line, child.line if child.line?
-            line = first_line = Math.min line, child.first_line if child.first_line?
-            column = first_column = Math.min column, child.column if child.column?
-            column = first_column = Math.min column, child.first_column if child.first_column?
-            last_line = Math.max last_line, child.line if child.line?
-            last_line = Math.max last_line, child.last_line if child.last_line?
-            last_column = Math.max last_column, child.column if child.column
-            last_column = Math.max last_column, child.last_column if child.last_column
-            filename = filename or child.filename
-        
-    target <<< {first_line,first_column,last_line,last_column,line,column,filename}
+    \./ast/utils : ...
 
 unified-replace-child = (child-to-replace, ...nodes) ->
     for name in @children when child = @[name]
@@ -177,6 +150,11 @@ Compiler <<<
     
     init: ({@livescript,lexer}) !->
         @livescript <<< {lexer} if lexer
+        for name,Type of @livescript.ast
+            if Type?::?traverse-children
+                for k,v of Node{get-children, replace-with,to-source-node}
+                    Type::[k] ?= v
+                
         @lexer = Lexer.create {@livescript}
         @ast = AST[copy]!
         assert @ast.Block != AST.Block

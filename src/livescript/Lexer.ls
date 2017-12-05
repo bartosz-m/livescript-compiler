@@ -1,8 +1,6 @@
 import
     \assert
-    \js-nodes/JsNode
-    \js-nodes/SeriesNode
-    \js-nodes/symbols : { copy, as-node, js }
+    \js-nodes : { JsNode, SeriesNode, symbols : { copy, as-node, js } }
 
 OriginalLex = JsNode[copy]!
     ..name = \original-lex.Lexer
