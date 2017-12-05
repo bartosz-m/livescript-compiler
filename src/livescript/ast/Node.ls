@@ -5,8 +5,8 @@ import
     \../../core/symbols : ...
     \../../composition : { import-properties }
     
-    \../../nodes/ObjectNode
-    \../../nodes/symbols : ...
+    \js-nodes : { ObjectNode }
+    \js-nodes/symbols : { copy, as-node, js }
     
     \./symbols : ...
 
@@ -108,6 +108,9 @@ NodeNode.import-enumerable do
         
     to-source-node: ({parts = []}) ->
         try
+            # exports and imports moved to top don't have parents for now
+            # unless (@[parent] and @[type])
+            #     throw new InternalCompilerError @, "#{@[type]} doesn't have parent"
             unless @line?
                 # console.log "missing line #{@[type]} at #{@[parent]?[type]} #{@[parent]?line}"
                 @{line,column} = @[parent]

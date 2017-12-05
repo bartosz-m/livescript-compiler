@@ -1,7 +1,9 @@
 import
     \../../core/symbols : ...
     \./Node
+    \./Property
     \./symbols : ...
+    \./utils : ...
 
 
 export default ObjectPattern = ^^Node
@@ -9,6 +11,12 @@ ObjectPattern <<<
     (type): \ObjectPattern.ast.livescript
     (init): (@{items}) !->
         for item in @items
+            item[parent] = @
+        for item,pos in @items
+            if item[type] == \Prop
+                @items[pos] = Property[create] key: item.key, value: item.val
+                    copy-source-location item, ..
+                    item = ..
             item[parent] = @
       
     traverse-children: (visitor, cross-scope-boundary) ->

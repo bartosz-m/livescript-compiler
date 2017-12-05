@@ -4,14 +4,37 @@ import
     \./SourceNode
     \./Lexer
     \./ast/Node
-    \../nodes/ObjectNode
-    \../nodes/JsNode
-    \../nodes/SeriesNode
+    \js-nodes/ObjectNode
+    \js-nodes/JsNode
+    \js-nodes/SeriesNode
     \./ExpandNode
+    \js-nodes/symbols : { copy, as-node, js }
 
 import ...
     \./ast/symbols
-    \../nodes/symbols
+
+copy-source-location = (source, target) !->
+    if target.line?
+        return
+    {first-line,first-column,last-line,last-column,line,column,filename}  = source
+    unless line?
+        first_line = line = 10000000000
+        first_column = column = 10000000000
+        last_line = -1
+        last_column = -1
+        children = source.get-children!
+        for child in children
+            line = first_line = Math.min line, child.line if child.line?
+            line = first_line = Math.min line, child.first_line if child.first_line?
+            column = first_column = Math.min column, child.column if child.column?
+            column = first_column = Math.min column, child.first_column if child.first_column?
+            last_line = Math.max last_line, child.line if child.line?
+            last_line = Math.max last_line, child.last_line if child.last_line?
+            last_column = Math.max last_column, child.column if child.column
+            last_column = Math.max last_column, child.last_column if child.last_column
+            filename = filename or child.filename
+        
+    target <<< {first_line,first_column,last_line,last_column,line,column,filename}
 
 unified-replace-child = (child-to-replace, ...nodes) ->
     for name in @children when child = @[name]
@@ -235,8 +258,12 @@ Compiler <<<
         assert filename
         for e in ast[]exports
             e.filename = filename
+            copy-source-location e, e
         for e in ast[]imports
             e.filename = filename
+            copy-source-location e, e
+        fix = -> copy-source-location it, it
+        ast.traverse-children fix, true
         
     
     add-source-map-url: ({result, code, options}) !->
@@ -257,6 +284,7 @@ Compiler <<<
         
         output = SourceNode.from-source-node ast.Compile.call ast, options
         output.set-file options.filename
+        @fix-source-map output,options.filename
         @postprocess-generated-code.exec output
         if (map = options.map) and map != \none
             result = output.to-string-with-source-map!                
