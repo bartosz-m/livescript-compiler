@@ -16,11 +16,11 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "chokidar": "^1.7.0",
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^4.0.3",
     "livescript": "git+https://github.com/gkz/LiveScript.git",
     "livescript-compiler": "0.0.24",
     "livescript-system": "0.0.4",
-    "livescript-transform-esm": "^2.8.22",
+    "livescript-transform-esm": "^2.8.26",
     "livescript-transform-implicit-async": "^0.1.7",
     "livescript-transform-object-create": "1.0.2"
   },
