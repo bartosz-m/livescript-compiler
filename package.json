@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "js-nodes": "0.0.1",
-    "source-map": "^0.6.1"
+    "source-map": "^0.6.1",
+    "sourcemap-validator": "^1.0.6"
   }
 }
