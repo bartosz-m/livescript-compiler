@@ -42,12 +42,12 @@ ExpandNode <<<
     ]
     exec: (ast-root) !->
         changed = false
-        to-exec = [ast-root]
-        while to-exec.length
+        to-process = [ast-root]
+        while to-process.length
             changed = false
-            execing = to-exec
-            to-exec = []
-            for node in execing
+            processing = to-process
+            to-process = []
+            for node in processing
                 for rule in @rules when mapped = rule.exec node
                     try
                         changed = true
@@ -61,11 +61,12 @@ ExpandNode <<<
                     catch
                         e.message += "\n at node #{@name} applyin #{rule.name}"
                         console.log e
+                        console.log ast-root
                         throw e
             if changed
-                to-exec.push ast-root
+                to-process.push ast-root
             else
-                to-exec.push ...flatten execing.map ->
+                to-process.push ...flatten processing.map ->
                     it.get-children?! # livescript generates additional nodes during compilation and we cannot touch them
     (copy): ->
         ^^@
