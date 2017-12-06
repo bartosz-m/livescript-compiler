@@ -78,7 +78,7 @@ NodeNode.import-enumerable do
         if type = @[type]
             throw Error "You need to implement method #{type}::replace-child youreself"
         else
-            console.log  @to-string!
+            console.log  @
             throw Error "You need to implement method ::replace-child youreself"
     
     replace-with: (...nodes) ->
@@ -110,13 +110,14 @@ NodeNode.import-enumerable do
             # exports and imports moved to top don't have parents for now
             # unless (@[parent] and @[type])
             #     throw new InternalCompilerError @, "#{@[type]} doesn't have parent"
-            unless @line?
-                # console.log "missing line #{@[type]} at #{@[parent]?[type]} #{@[parent]?line}"
-                @{line,column} = @[parent]
-                # ,column}
-            unless @filename?
-                @{filename} = @[parent]
+            # unless @line?
+            #     # console.log "missing line #{@[type]} at #{@[parent]?[type]} #{@[parent]?line}"
+            #     @{line,column} = @[parent]
+            #     # ,column}
+            # unless @filename?
+            #     @{filename} = @[parent]
                 # console.log "missing filename #{@[type]} at #{@[parent]?[type]} #{@[parent]?line} #{@[parent]?filename}"
+          
             parts = parts.map ->
                 if \String == typeof! it then "#{it}"
                 else it
