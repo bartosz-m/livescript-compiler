@@ -8,6 +8,8 @@ import
     \js-nodes : {ObjectNode, JsNode, SeriesNode, symbols : { copy, as-node, js } }
     \./ExpandNode
     \./ast/utils : ...
+    \./validate-source-node
+    \./validate-source-map
 
 unified-replace-child = (child-to-replace, ...nodes) ->
     for name in @children when child = @[name]
@@ -21,12 +23,68 @@ unified-replace-child = (child-to-replace, ...nodes) ->
         if \Array == typeof! child
             if -1  != idx = child.index-of child-to-replace
                 child.splice idx, 1, ...nodes
+                child[parent] = null
                 for node in nodes
                     node[parent] = @
+                return child
+    
+    throw Error "Trying to replace node witch is not child of current node"
+
+unified-remove-child = (child-to-replace) ->
+    for name in @children when child = @[name]
+        if child == child-to-replace
+            child[parent] = null
+            @[name] = null
+            return child
+        if \Array == typeof! child
+            if -1  != idx = child.index-of child-to-replace
+                child.splice idx, 1
                 child[parent] = null
                 return child
     
     throw Error "Trying to replace node witch is not child of current node"
+
+MAX_LINE = 999999
+
+get-first-line = (node) ->
+    if node.first_line? => node.first_line
+    else
+        first_line = MAX_LINE
+        walk = (node) !->
+            if node.first_line?
+                first_line := first_line <? node.first_line
+        node.traverse-children walk,true
+        first_line
+
+get-first-column = (node) ->
+    if node.first_column? => node.first_column
+    else
+        { first_line } = node
+        first_column = MAX_LINE
+        walk = (node) !->
+            if node.first_line == first_line and node.first_column?
+                first_column := first_column <? node.first_column
+        node.traverse-children walk,true
+        first_column
+
+deduce-source-location = (node) !->
+    unless node.first_line?
+        node.first_line = get-first-line node
+        if node.first_line == MAX_LINE
+            if node[parent]
+                node.first_line = get-first-line node[parent]
+        node.line = node.first_line
+        
+            
+        console.log \missing-line node[type], node.first_line
+    unless node.first_column?
+        node.first_column = get-first-column node
+        if node.first_column == MAX_LINE
+            if node[parent]
+                node.first_column = get-first-column node[parent]
+        node.column = node.first_column
+        console.log \missing-column node[type], node.first_column
+  
 
 AST = ObjectNode[copy]!properties
     ..[as-node]name = \ast.livescript
@@ -101,14 +159,15 @@ AssignReplaceChild = JsNode.new (child, ...nodes) ->
         throw new Error "Cannot replace child of assign with #{nodes.length} nodes."
     [new-node] = nodes
     if @left == child
+        child[parent] = null
         @left = new-node
             ..[parent] = @
-        child[parent] = null
+        
         child
     else if @right == child
+        child[parent] = null
         @right = new-node
             ..[parent] = @
-        child[parent] = null
         child
     else
       throw new Error "Node is not child of Assign"
@@ -127,6 +186,7 @@ AST.Yield[as-node]import-enumerable do
   
 AST.Chain[as-node]import-enumerable do
     replace-child: unified-replace-child
+    remove-child: unified-remove-child
     
 AST.Cascade[as-node]import-enumerable do
     replace-child: AST.Chain.replace-child     
@@ -143,6 +203,9 @@ assert-nodes = JsNode.new !->
         assertions ...
     it.traverse-children walk
       
+
+
+            
 
 export default Compiler = ^^ObjectNode
 Compiler <<<
@@ -165,6 +228,8 @@ Compiler <<<
         @postprocess-generated-code = SeriesNode[copy]!
             ..name = 'postprocessGeneratedCode'
             ..this = @
+            ..append validate-source-node
+        
     
     nodes-names: <[
         ast lexer expand postprocessAst postprocessGeneratedCode
@@ -213,12 +278,14 @@ Compiler <<<
             @expand.exec ..
             assert-nodes.exec ..
             @postprocess-ast.exec ..
-            @fix-ast-source-map .., options.filename
+            # @fix-ast-source-map .., options.filename
             # assert-nodes.exec ..
     
     fix-node: (node, filename) !->
       assert filename
       if \String != typeof! node
+          if node.line < 0
+              console.log 'incorrect' node{line,column}
           unless node.source
               node.source = filename
           for child in node.children
@@ -234,13 +301,17 @@ Compiler <<<
     
     fix-ast-source-map: (ast, filename) !->
         assert filename
+        fix = !->
+            it.filename = filename
+            deduce-source-location it
+            # copy-source-location it, it
         for e in ast[]exports
-            e.filename = filename
-            copy-source-location e, e
+            fix e
+            # copy-source-location e, e
         for e in ast[]imports
-            e.filename = filename
-            copy-source-location e, e
-        fix = -> copy-source-location it, it
+            fix e
+            # copy-source-location e, e
+        
         ast.traverse-children fix, true
         
     
@@ -265,7 +336,8 @@ Compiler <<<
         @fix-source-map output,options.filename
         @postprocess-generated-code.exec output
         if (map = options.map) and map != \none
-            result = output.to-string-with-source-map!                
+            result = output.to-string-with-source-map!    
+                # validate-source-map result{map,code} <<< {ast}
                 ..ast = ast
                 @add-source-map-url {result,code, options}
             result
