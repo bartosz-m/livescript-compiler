@@ -1,10 +1,9 @@
 {
   "name": "livescript-compiler",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "description": "Pluggable LiveScript compiler",
   "main": "lib/index.js",
   "scripts": {
-    "prepublishOnly": "npm run build && npm run test",
     "test": "node_modules/.bin/lsc test",
     "build": "node -r livescript-transform-esm/register/cjs ./dev/build",
     "clean": "rm -rf lib",
@@ -18,7 +17,6 @@
     "chokidar": "^1.7.0",
     "fs-extra": "^4.0.3",
     "livescript": "git+https://github.com/gkz/LiveScript.git",
-    "livescript-compiler": "0.0.24",
     "livescript-system": "0.0.4",
     "livescript-transform-esm": "^2.8.26",
     "livescript-transform-implicit-async": "^0.1.7",

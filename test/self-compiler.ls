@@ -2,6 +2,13 @@ require! {
     \path
     \chokidar
     \fs-extra : fs
+}
+
+lib-path = absolute-path '../tmp'
+src-path = absolute-path '../src/'
+process.on \exit !-> fs.remove lib-path
+
+require! {
     \livescript : livescript
     \livescript/lib/lexer : livescript-lexer
     \livescript-transform-object-create
@@ -9,15 +16,13 @@ require! {
     \../lib/livescript/Compiler : { __default__: Compiler }
 }
 
-
 livescript.lexer = livescript-lexer
 ls-compiler = Compiler.create {livescript}
 transform-esm.install ls-compiler, format: \cjs
 
 absolute-path = -> path.normalize path.join __dirname, it
 
-lib-path = absolute-path '../tmp'
-src-path = absolute-path '../src/'
+
 watching = true
 
 default-options =
@@ -39,11 +44,13 @@ set-watching = ->
     watching := it
     if ready and to-compile == 0 and not watching
         watcher.close!
+        fs.remove lib-path
         if errors.length
             deferred.reject errors
         else
             deferred.resolve!
-        fs.remove lib-path
+        
+
 
 compile = (filepath) !->>
     to-compile++
