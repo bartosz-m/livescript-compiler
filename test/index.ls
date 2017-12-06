@@ -18,5 +18,9 @@ do !->>
     try
         await require \./self-build-test
     catch 
-        console.log "self build failed with errors :\n #{e.map (.message) .join '\n'}"
+        if Array.is-array errors
+            console.log "self build failed with errors :\n #{e.map (.message) .join '\n'}"
+        else
+            console.log e
+        
         process.exit 1

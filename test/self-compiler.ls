@@ -4,6 +4,7 @@ require! {
     \fs-extra : fs
 }
 
+absolute-path = -> path.normalize path.join __dirname, it
 lib-path = absolute-path '../tmp'
 src-path = absolute-path '../src/'
 process.on \exit !-> fs.remove lib-path
@@ -20,7 +21,6 @@ livescript.lexer = livescript-lexer
 ls-compiler = Compiler.create {livescript}
 transform-esm.install ls-compiler, format: \cjs
 
-absolute-path = -> path.normalize path.join __dirname, it
 
 
 watching = true
