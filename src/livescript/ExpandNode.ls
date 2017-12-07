@@ -53,15 +53,13 @@ ExpandNode <<<
                         changed = true
                         new-nodes = as-array mapped
                         unless new-nodes.0
-                            console.log \empty rule
+                            node.remove!
                         for n in new-nodes
                             copy-source-location node, n
                         node.replace-with ...new-nodes
                         break
                     catch
                         e.message += "\n at node #{@name} applyin #{rule.name}"
-                        console.log e
-                        console.log ast-root
                         throw e
             if changed
                 to-process.push ast-root

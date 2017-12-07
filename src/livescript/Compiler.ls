@@ -76,14 +76,12 @@ deduce-source-location = (node) !->
         node.line = node.first_line
         
             
-        console.log \missing-line node[type], node.first_line
     unless node.first_column?
         node.first_column = get-first-column node
         if node.first_column == MAX_LINE
             if node[parent]
                 node.first_column = get-first-column node[parent]
         node.column = node.first_column
-        console.log \missing-column node[type], node.first_column
   
 
 AST = ObjectNode[copy]!properties
