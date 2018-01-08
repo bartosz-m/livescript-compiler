@@ -9,7 +9,6 @@ import
     \./ExpandNode
     \./ast/utils : ...
     \./validate-source-node
-    \./validate-source-map
 
 unified-replace-child = (child-to-replace, ...nodes) ->
     for name in @children when child = @[name]
@@ -335,7 +334,6 @@ Compiler <<<
         @postprocess-generated-code.exec output
         if (map = options.map) and map != \none
             result = output.to-string-with-source-map!    
-                # validate-source-map result{map,code} <<< {ast}
                 ..ast = ast
                 @add-source-map-url {result,code, options}
             result
