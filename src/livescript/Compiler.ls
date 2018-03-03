@@ -111,6 +111,8 @@ wrap-node = (mapper) ->
 
 AST.Block = ObjectNode[copy]!properties
     ..[as-node]name = \Block.ast.livescript
+AST.Arr = ObjectNode[copy]!properties
+    ..[as-node]name = \Arr.ast.livescript
 AST.Assign = ObjectNode[copy]!properties
     ..[as-node]name = \Assign.ast.livescript
 AST.Call = ObjectNode[copy]!properties
@@ -121,6 +123,7 @@ AST.Yield = ObjectNode[copy]!properties
     ..[as-node]name = \Yield.ast.livescript
 AST.Cascade = ObjectNode[copy]!properties
     ..[as-node]name = \Cascade.ast.livescript
+
 
 assert AST.Block != AST.Block[copy]!
 assert AST.Block != AST[copy]!Block
@@ -175,6 +178,9 @@ AssignReplaceChild
 AST.Assign
     ..replace-child = AssignReplaceChild[js]
     
+AST.Arr[as-node]import-enumerable do
+    replace-child: unified-replace-child
+
 AST.Call[as-node]import-enumerable do
     replace-child: unified-replace-child
 
@@ -226,6 +232,19 @@ Compiler <<<
             ..name = 'postprocessGeneratedCode'
             ..this = @
             ..append validate-source-node
+        
+        @add-source-map-url = SeriesNode[copy]!
+            ..name = 'addSourceMapUrl'
+            ..this = @
+            ..append JsNode.new ({result, ast, code, options}) !->
+                {filename, output-filename} = options
+                if options.map is 'embedded'
+                    result.map.set-source-content filename, code
+                if options.map in <[ linked debug ]>
+                    map-path = "#{path.basename output-filename}.map"
+                    result.code += "\n//# sourceMappingURL=#map-path\n"
+                else
+                   result.code += "\n//# sourceMappingURL=data:application/json;base64,#{ new Buffer result.map.to-string! .to-string 'base64' }\n"
         
     
     nodes-names: <[
@@ -312,15 +331,17 @@ Compiler <<<
         ast.traverse-children fix, true
         
     
-    add-source-map-url: ({result, code, options}) !->
-        {filename, output-filename} = options
-        if options.map is 'embedded'
-            result.map.set-source-content filename, code
-        if options.map in <[ linked debug ]>
-            map-path = "#{path.basename output-filename}.map"
-            result.code += "\n//# sourceMappingURL=#map-path\n"
-        else
-           result.code += "\n//# sourceMappingURL=data:application/json;base64,#{ new Buffer result.map.to-string! .to-string 'base64' }\n"
+    # add-source-map-url: ({result, ast, code, options}) !->
+    #     {filename, output-filename} = options
+    #     if ast.is-module
+    #       output-filename.replace /\.js$/ '.mjs'
+    #     if options.map is 'embedded'
+    #         result.map.set-source-content filename, code
+    #     if options.map in <[ linked debug ]>
+    #         map-path = "#{path.basename output-filename}.map"
+    #         result.code += "\n//# sourceMappingURL=#map-path\n"
+    #     else
+    #        result.code += "\n//# sourceMappingURL=data:application/json;base64,#{ new Buffer result.map.to-string! .to-string 'base64' }\n"
            
     compile-ast: ({ast, code, options}) ->
         unless options.filename
@@ -335,7 +356,7 @@ Compiler <<<
         if (map = options.map) and map != \none
             result = output.to-string-with-source-map!    
                 ..ast = ast
-                @add-source-map-url {result,code, options}
+                @add-source-map-url.exec {result,ast,code, options}
             result
         else
             output.to-string!
